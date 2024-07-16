@@ -5,68 +5,82 @@
 
 #include "linked_list.h"
 
-linked_list_status linked_list_init(linked_list_t *list) {
+linked_list_status stat;
+
+linked_list_t *linked_list_init() {
+  linked_list_t *list = (linked_list_t *)malloc(sizeof(linked_list_t));
   if (list == NULL) {
-    return linked_list_null;
+    stat = linked_list_out_of_memory;
+    return NULL;
   }
 
   list->data = NULL;
   list->next = NULL;
 
-  return linked_list_success;
+  stat = linked_list_success;
+  return list;
 }
 
 void linked_list_free(linked_list_t *list) {
   if (list == NULL) {
     return;
   }
+  linked_list_t *temp;
 
-  for (; list != NULL; list = list->next) {
+  for (; list != NULL; list = temp) {
     if (list->data != NULL) {
       free(list->data);
     }
+
+    temp = list->next;
+    free(list);
   }
+
+  stat = linked_list_success;
 }
 
-linked_list_status linked_list_insert_current(linked_list_t *list, char *d,
-                                              int n) {
+void linked_list_insert_current(linked_list_t *list, char *d, int n) {
   assert(list != NULL);
 
   list->data = malloc(n);
   if (list->data == NULL) {
-    return linked_list_out_of_memory;
+    stat = linked_list_out_of_memory;
+    return;
   }
 
   strncpy(list->data, d, n);
 
-  return linked_list_success;
+  stat = linked_list_success;
 }
 
-linked_list_status linked_list_insert_new(linked_list_t *list, char *d, int n) {
-  linked_list_status stat;
+void linked_list_insert_new(linked_list_t *list, char *d, int n) {
+  int i;
+  int list_length = linked_list_length(list);
   assert(list != NULL);
 
-  linked_list_t *temp = (linked_list_t *)malloc(sizeof(linked_list_t));
-  memset(temp, 0, sizeof(linked_list_t));
+  linked_list_t *new = (linked_list_t *)malloc(sizeof(linked_list_t));
+  memset(new, 0, sizeof(linked_list_t));
 
-  if ((stat = linked_list_insert_current(temp, d, n)) != linked_list_success) {
-    return stat;
+  linked_list_insert_current(new, d, n);
+  if (stat != linked_list_success) {
+    return;
   }
 
-  temp->next = list->next;
-  list->next = temp;
+  // NOTE: starting with 1 here, as there is already a node when this function
+  // is called
+  for (i = 1; i < list_length; ++i) {
+    list = list->next;
+  }
 
-  return linked_list_success;
+  list->next = new;
+
+  stat = linked_list_success;
 }
 
-linked_list_status linked_list_insert(linked_list_t *list, char *d, int n,
-                                      int p) {
+void linked_list_insert(linked_list_t *list, char *d, int n) {
   if (list == NULL) {
-    return linked_list_null;
-  }
-
-  if (p > linked_list_length(list)) {
-    return linked_list_out_of_bounds;
+    stat = linked_list_null;
+    return;
   }
 
   if (list->data == NULL) {
@@ -88,7 +102,40 @@ int linked_list_length(linked_list_t *list) {
   return i;
 }
 
-char *linked_list_strerror(linked_list_status stat) {
+int linked_list_find(linked_list_t *list, char *str, int n) {
+  int not_found = -1;
+  int index;
+
+  for (index = 1; list != NULL; list = list->next, ++index) {
+    if (strncmp(list->data, str, n) == 0) {
+      return index;
+    }
+  }
+
+  return not_found;
+}
+
+void linked_list_delete(linked_list_t *list, int index) {
+  if (index > linked_list_length(list)) {
+    stat = linked_list_out_of_bounds;
+    return;
+  }
+
+  for (; index > 1; list = list->next, --index)
+    ;
+
+  linked_list_t *temp = list->next;
+  if (temp != NULL) {
+    list->next = temp->next;
+  }
+
+  free(temp->data);
+  free(temp);
+
+  stat = linked_list_success;
+}
+
+char *linked_list_strerror() {
   switch (stat) {
   case linked_list_success:
     return "success";
@@ -107,6 +154,6 @@ void linked_list_print(linked_list_t *list) {
   int i;
 
   for (i = 0; list != NULL; list = list->next, ++i) {
-    printf("\tIndex: %5d\tValue: %s\n", i, list->data);
+    printf("Index: %-5d\tValue: %s\n", i, list->data);
   }
 }

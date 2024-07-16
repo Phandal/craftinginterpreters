@@ -16,32 +16,37 @@
 
 #include "linked_list.h"
 
+extern linked_list_status stat;
+
 int main(void) {
-  linked_list_status stat;
-  linked_list_t outer;
-
-  if ((stat = linked_list_init(&outer)) != linked_list_success) {
-    fprintf(stderr, "init: %s\n", linked_list_strerror(stat));
+  linked_list_t *outer = linked_list_init();
+  if (stat != linked_list_success) {
+    fprintf(stderr, "init: %s\n", linked_list_strerror());
     exit(stat);
   }
 
-  if ((stat = linked_list_insert(&outer, "Hello", 6, 0)) !=
-      linked_list_success) {
-    fprintf(stderr, "insert: %s\n", linked_list_strerror(stat));
+  linked_list_insert(outer, "hello", 6);
+  if (stat != linked_list_success) {
+    fprintf(stderr, "insert: %s\n", linked_list_strerror());
     exit(stat);
   }
 
-  if ((stat = linked_list_insert(&outer, "World", 6, 1)) !=
-      linked_list_success) {
-    fprintf(stderr, "insert: %s\n", linked_list_strerror(stat));
+  linked_list_insert(outer, "world", 6);
+  if (stat != linked_list_success) {
+    fprintf(stderr, "insert: %s\n", linked_list_strerror());
     exit(stat);
   }
+  printf("Linked List Original:\n");
+  linked_list_print(outer);
 
-  linked_list_print(&outer);
+  linked_list_delete(outer, 1);
+  if (stat != linked_list_success) {
+    fprintf(stderr, "delete: %s\n", linked_list_strerror());
+    exit(stat);
+  }
+  
+  printf("Linked List After Delete:\n");
+  linked_list_print(outer);
 
-  // linked_list_find
-
-  // linked_list_delete
-
-  linked_list_free(&outer);
+  linked_list_free(outer);
 }

@@ -13,11 +13,13 @@ typedef struct linked_list {
   struct linked_list *next;
 } linked_list_t;
 
-linked_list_status linked_list_init(linked_list_t *);
+linked_list_t *linked_list_init();
 void linked_list_free(linked_list_t *);
-linked_list_status linked_list_insert(linked_list_t *, char *, int, int);
+void linked_list_insert(linked_list_t *, char *, int);
+int linked_list_find(linked_list_t *, char *, int);
+void linked_list_delete(linked_list_t *, int);
 int linked_list_length(linked_list_t *);
-char *linked_list_strerror(linked_list_status);
+char *linked_list_strerror();
 void linked_list_print(linked_list_t *);
 
 #endif // LINKED_LIST_H
