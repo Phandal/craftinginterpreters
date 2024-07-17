@@ -16,6 +16,7 @@ linked_list_t *linked_list_init() {
 
   list->data = NULL;
   list->next = NULL;
+  list->prev = NULL;
 
   stat = linked_list_success;
   return list;
@@ -73,6 +74,7 @@ void linked_list_insert_new(linked_list_t *list, char *d, int n) {
   }
 
   list->next = new;
+  new->prev = list;
 
   stat = linked_list_success;
 }
@@ -129,6 +131,10 @@ void linked_list_delete(linked_list_t *list, int index) {
     list->next = temp->next;
   }
 
+  if (temp->next != NULL) {
+    temp->next->prev = list;
+  }
+
   free(temp->data);
   free(temp);
 
@@ -154,6 +160,6 @@ void linked_list_print(linked_list_t *list) {
   int i;
 
   for (i = 0; list != NULL; list = list->next, ++i) {
-    printf("Index: %-5d\tValue: %s\n", i, list->data);
+    printf("Index: %-5dCurrent: %-20pPrev: %-20pNext: %-20pValue: %s\n", i, list, list->prev, list->next, list->data);
   }
 }

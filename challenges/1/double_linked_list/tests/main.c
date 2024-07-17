@@ -13,6 +13,7 @@ void test_linked_list_init() {
   assert(t != NULL);
   assert(t->data == NULL);
   assert(t->next == NULL);
+  assert(t->prev == NULL);
   linked_list_free(t);
 }
 
@@ -47,6 +48,7 @@ void test_linked_list_insert() {
   linked_list_t *temp = t->next;
   assert(temp != NULL);
   assert(strncmp(temp->data, "world", 6) == 0);
+  assert(temp->prev == t);
 
   linked_list_free(t);
 }
@@ -89,6 +91,7 @@ void test_linked_list_delete() {
   assert(linked_list_length(t) == 2);
   assert(strncmp(t->data, "hello", 6) == 0);
   assert(strncmp(t->next->data, "!", 1) == 0);
+  assert(t->next->prev == t);
 
   linked_list_free(t);
 }

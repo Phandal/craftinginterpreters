@@ -4,13 +4,6 @@
  * date: 07/15/2024
  */
 
-/* TODO
-   1. Think about if you should add insert and append or just insert?
-      Does insert need to take a position?
-   2. Look into some sort of tdd with tests.
-      This also means moving the list stuff to its own lib.
-  */
-
 #include <stdio.h>
 #include <stdlib.h>
 
