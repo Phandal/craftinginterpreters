@@ -1,6 +1,6 @@
 package com.phandal.lox;
 
-class Token {
+public class Token {
     final TokenType type;
     final String lexeme;
     final Object literal;
