@@ -1,3 +1,4 @@
+com/phandal/lox/Scanner.class
 com/phandal/lox/Lox.class
 com/phandal/lox/Token.class
 com/phandal/lox/TokenType.class
