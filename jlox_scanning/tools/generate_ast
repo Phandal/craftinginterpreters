@@ -21,6 +21,7 @@ def main():
 
     defineAst(outputDir, basename, exprTypes)
 
+
 def defineAst(outputDir: str, baseName: str, exprTypes: list[str]):
     if (not path.exists(outputDir) or not path.isdir(outputDir)):
         print(f'[Error] "{outputDir}" does not exist or is not a directory')
@@ -36,12 +37,27 @@ def defineAst(outputDir: str, baseName: str, exprTypes: list[str]):
         outputFile.write('import java.util.List;\n\n');
         outputFile.write(f'abstract class {baseName} {"{"}\n\n')
 
+        defineVisitor(outputFile, baseName, exprTypes);
+
+        outputFile.write('  abstract <T> T accept(Visitor<T> visitor);\n\n');
+
         for exprType in exprTypes:
             className = exprType.split(':')[0].strip()
             fieldList = exprType.split(':')[1].strip()
             defineType(outputFile, baseName, className, fieldList);
 
         outputFile.write('}');
+
+
+def defineVisitor(file: TextIOWrapper, baseName: str, exprTypes: list[str]):
+    file.write('    interface Visitor<T> {\n')
+
+    for exprType in exprTypes:
+        typeName = exprType.split(':')[0].strip()
+        file.write(f'        T visit{typeName}{baseName}({typeName} {baseName.lower()});\n')
+
+    file.write('    }\n\n')
+
 
 def defineType(file: TextIOWrapper, baseName: str, className: str, fieldList: str):
     file.write(f'   static class {className} extends {baseName} {"{"}\n')
@@ -55,11 +71,17 @@ def defineType(file: TextIOWrapper, baseName: str, className: str, fieldList: st
             file.write(f'           this.{name} = {name};\n')
     file.write('        }\n\n')
 
+    file.write('        @Override\n');
+    file.write('        <T> T accept(Visitor<T> visitor) {\n')
+    file.write(f'           return visitor.visit{className}{baseName}(this);\n')
+    file.write('        }\n\n')
+
     # Fields
     for field in fields:
         file.write(f'        final {field};\n');
 
     file.write('    }\n\n')
+
 
 if __name__ == '__main__':
     main()
